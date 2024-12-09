@@ -253,9 +253,10 @@ def _unpack_category_file(
     *_, link_name, url = link
     local_fl = os.path.join(download_folder, link_name)
     print(f"Unpacking dataset file {local_fl} ({link_name}) to {download_folder}.")
-    shutil.unpack_archive(local_fl, download_folder)
-    if clear_archive:
-        os.remove(local_fl)
+    print(f"Here we do not unpack the file because zip files are fast to upload")
+    # shutil.unpack_archive(local_fl, download_folder)
+    # if clear_archive:
+    #     os.remove(local_fl)
 
 
 def _download_category_file(
