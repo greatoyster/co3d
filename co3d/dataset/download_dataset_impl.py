@@ -16,8 +16,10 @@ from argparse import ArgumentParser
 from typing import List, Optional
 from multiprocessing import Pool
 from tqdm import tqdm
-
+import subprocess
 from .check_checksum import check_co3d_sha256
+
+target_path = "/mnt/data/co3d_download"
 
 
 def download_dataset(
@@ -254,6 +256,8 @@ def _unpack_category_file(
     local_fl = os.path.join(download_folder, link_name)
     print(f"Unpacking dataset file {local_fl} ({link_name}) to {download_folder}.")
     print(f"Here we do not unpack the file because zip files are fast to upload")
+    print(f">> mv -f {local_fl} {target_path}")
+    subprocess.run(f"mv -f {local_fl} {target_path}", shell=True, cwd=download_folder)
     # shutil.unpack_archive(local_fl, download_folder)
     # if clear_archive:
     #     os.remove(local_fl)
