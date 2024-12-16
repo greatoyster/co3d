@@ -18,9 +18,8 @@ from multiprocessing import Pool
 from tqdm import tqdm
 import subprocess
 from .check_checksum import check_co3d_sha256
-
-target_path = "/mnt/data/co3d_download"
-
+from ipdb import set_trace
+"gsutil -m -n cp -r"
 
 def download_dataset(
     link_list_file: str,
@@ -109,7 +108,7 @@ def download_dataset(
                 + "dataset categories."
             )
         data_links = [(c, ln, l) for c, ln, l in data_links if c in download_categories]
-
+    set_trace()
     with Pool(processes=n_download_workers) as download_pool:
         print(f"Downloading {len(metadata_links)} dataset metadata files ...")
         for _ in tqdm(
@@ -164,7 +163,10 @@ def download_dataset(
             total=len(metadata_links) + len(data_links),
         ):
             pass
-
+    all_categories = set([c for c, _, _ in data_links])
+    for category in all_categories:
+        print(f"uploading {category} to gs://mpl_data/co3d_download")
+        subprocess.run(f"gsutil -m -n cp -r {os.path.join(download_folder, category)} gs://mpl_data/co3d_download", shell=True, cwd=download_folder)
     print("Done")
 
 
@@ -255,12 +257,9 @@ def _unpack_category_file(
     *_, link_name, url = link
     local_fl = os.path.join(download_folder, link_name)
     print(f"Unpacking dataset file {local_fl} ({link_name}) to {download_folder}.")
-    print(f"Here we do not unpack the file because zip files are fast to upload")
-    print(f">> mv -f {local_fl} {target_path}")
-    subprocess.run(f"mv -f {local_fl} {target_path}", shell=True, cwd=download_folder)
-    # shutil.unpack_archive(local_fl, download_folder)
-    # if clear_archive:
-    #     os.remove(local_fl)
+    shutil.unpack_archive(local_fl, download_folder)
+    if clear_archive:
+        os.remove(local_fl)
 
 
 def _download_category_file(
